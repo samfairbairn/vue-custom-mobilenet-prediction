@@ -17,7 +17,7 @@ import { Camera } from '@/services/getMediaDevices.js'
 // import { IMAGENET_CLASSES } from '@/config/imagenet_classes'
 
 // const labels = manifest.labels
-const labels = ['facepalm', 'peace']
+const labels = ['facepalm', 'other', 'peace']
 
 export default {
   name: 'App',
@@ -178,8 +178,10 @@ export default {
       // let result = await this.makePrediction(manifest.testing[this.testIndex].image)
       let result = await this.makePrediction()
 
-      this.label = result.label
-      this.score = result.score
+      if (result.score > 0.8) {
+        this.label = result.label
+        this.score = result.score
+      }
       
       this.testIndex++
       this.stats.end()
