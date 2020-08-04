@@ -1,10 +1,14 @@
 <template lang="pug">
-  #app
+  #app(:style="appSize")
     .stats(ref="stats")
-    canvas(ref="canvas" width="224" height="224")
-    video(ref="video" playsinline autoplay muted)
-    .label(v-if="label") {{label}}
-    .score(v-if="score") {{score.toFixed(5)}}
+
+    canvas.canvas(ref="canvas" width="224" height="224")
+    video.video(ref="video" :style="videoSize" playsinline autoplay muted)
+
+    .data
+      .label(v-if="!label") loading...
+      .label(v-if="label") {{label}}
+      .score(v-if="score") {{score.toFixed(5)}}
 </template>
 
 <script>
@@ -31,6 +35,33 @@ export default {
     label: undefined,
     score: undefined
   }),
+  computed: {
+    appSize: function () {
+      return {
+        height: window.innerHeight + 'px'
+      }
+    },
+    videoSize: function () {
+      if (!this.streamSettings) return {}
+      if (this.streamSettings.aspectRatio > window.innerWidth / window.innerHeight) {
+        return {
+          height: window.innerHeight + 'px',
+          width: (window.innerHeight * this.streamSettings.aspectRatio) + 'px',
+        }
+      } else {
+        return {
+          height: window.innerWidth + 'px',
+          width: this.streamSettings.height * (window.innerWidth / this.streamSettings.width) + 'px',
+        }
+      }
+    }
+  },
+  watch: {
+    streamSettings: function () {
+      console.log('this.streamSettings')
+      console.log(this.streamSettings)
+    }
+  },
   mounted () {
     this.stats = new Stats()
     this.stats.showPanel(0)
@@ -178,7 +209,7 @@ export default {
       // let result = await this.makePrediction(manifest.testing[this.testIndex].image)
       let result = await this.makePrediction()
 
-      if (result.score > 0.8) {
+      if (result.score > 0.9) {
         this.label = result.label
         this.score = result.score
       }
@@ -199,14 +230,42 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
-  .label
-    font-size: 30px
+
+  position: absolute
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+
+  .canvas
+    position: absolute
+    top: 0
+    left: 0
+    opacity: 0
+    width: 224px
+    height: 224px
+
+  .video
+    position: absolute
+    left: 50%
+    top: 0
+    transform: translateX(-50%)
+
+  .data
     position: absolute
     top: 60px
-    left: 10px
-  .score
+    left: 0
+    width: 80px
+    background: white
+    display: flex
+    flex-direction: column
+    padding: 5px 10px
+    box-sizing: border-box
+    min-height: 30px
+
+  .label
     font-size: 14px
-    position: absolute
-    top: 100px
-    left: 10px
+
+  .score
+    font-size: 10px
 </style>
