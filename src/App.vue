@@ -5,6 +5,9 @@
     canvas.canvas(ref="canvas" width="224" height="224")
     video.video(ref="video" :style="videoSize" playsinline autoplay muted)
 
+    .emoji.facepalm(:class="{show: label === 'facepalm'}")
+    .emoji.peace(:class="{show: label === 'peace'}")
+
     .data
       .label(v-if="!label") loading...
       .label(v-if="label") {{label}}
@@ -250,6 +253,34 @@ export default {
     left: 50%
     top: 0
     transform: translateX(-50%)
+
+  .emoji
+    position: absolute
+    width: 160px
+    height: 160px
+    top: 60%
+    left: 50%
+    transform: translateX(-50%)
+    transition-property: opacity
+    transition-timing-function: ease-in-out
+    transition-duration: 250ms
+    opacity: 0
+
+    &.show
+      opacity: 1
+
+    &.peace
+      background-image: url(./assets/peace.png)
+      background-size: contain
+      background-position: center center
+      background-repeat: no-repeat
+
+    &.facepalm
+      background-image: url(./assets/facepalm.png)
+      background-size: contain
+      background-position: center center
+      background-repeat: no-repeat
+
 
   .data
     position: absolute
